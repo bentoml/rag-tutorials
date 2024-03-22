@@ -1,0 +1,8 @@
+bentoml>=1.2.8
+openai
+llama-index
+llama-index-llms-openai-like
+numpy
+torch==2.1.2
+sentence_transformers
+vllm==0.3.3

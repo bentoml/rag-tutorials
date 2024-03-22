@@ -1,0 +1,11 @@
+service: "service.py:RAGService"
+labels:
+  owner: bentoml-team
+include:
+  - "*.py"
+exclude:
+  - "storage/"
+python:
+  requirements_txt: "./requirement.txt"
+docker:
+    distro: debian

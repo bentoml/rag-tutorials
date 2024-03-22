@@ -1,0 +1,4 @@
+bentoml>=1.2.8
+openai
+llama-index
+numpy
