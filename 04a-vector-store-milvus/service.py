@@ -29,7 +29,6 @@ class RAGService:
     llm_service = bentoml.depends(VLLM)
 
     def __init__(self):
-        openai.api_key = os.environ.get("OPENAI_API_KEY")
         self.embed_model = BentoMLEmbeddings(self.embedding_service)
 
         from llama_index.core import Settings
@@ -46,8 +45,11 @@ class RAGService:
 
         # more options at https://milvus.io/docs/integrate_with_llamaindex.md
         vector_store = MilvusVectorStore(dim=384, overwrite=False)
-        storage_context = StorageContext.from_defaults(vector_store=vector_store)
-        self.index = load_index_from_storage(storage_context)
+        self.storage_context = StorageContext.from_defaults(vector_store=vector_store)
+        try:
+            self.index = VectorStoreIndex.from_vector_store(vector_store)
+        except ValueError:
+            self.index = None
 
         from bentoml._internal.container import BentoMLContainer
         self.vllm_url = BentoMLContainer.remote_runner_mapping.get()["VLLM_OpenAI"]
@@ -64,8 +66,14 @@ class RAGService:
             texts.append(text)
         all_text = "".join(texts)
         doc = Document(text=all_text)
-        self.index.insert(doc)
-        self.index.storage_context.persist(persist_dir=PERSIST_DIR)
+        if self.index is None:
+            self.index = VectorStoreIndex.from_documents(
+                [doc], storage_context=self.storage_context
+            )
+        else:
+            self.index.insert(doc)
+
+        self.index.storage_context.persist()
         return f"Successfully Loaded Document"
 
     
@@ -76,8 +84,14 @@ class RAGService:
             text = f.read()
 
         doc = Document(text=text)
-        self.index.insert(doc)
-        self.index.storage_context.persist(persist_dir=PERSIST_DIR)
+        if self.index is None:
+            self.index = VectorStoreIndex.from_documents(
+                [doc], storage_context=self.storage_context
+            )
+        else:
+            self.index.insert(doc)
+
+        self.index.storage_context.persist()
         return f"Successfully Loaded Document"
 
 
