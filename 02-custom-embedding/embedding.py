@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import typing as t
+
 import numpy as np
 import bentoml
 
@@ -65,10 +67,10 @@ class BentoMLEmbeddings(BaseEmbedding):
     
     async def _aget_query_embedding(self, query: str):
         res = await self.async_client(query)
-        return res[0]
+        return res[0].tolist()
     
     def _get_query_embedding(self, query: str):
-        return self.sync_client(query)[0]
+        return self.sync_client(query)[0].tolist()
     
     def _get_text_embedding(self, text):
         if isinstance(text, str):
