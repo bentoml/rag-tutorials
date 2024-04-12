@@ -7,7 +7,6 @@ from llama_index.core import Document, StorageContext, VectorStoreIndex, load_in
 from llama_index.core.node_parser import SentenceSplitter
 
 import os
-import numpy as np
 from pathlib import Path
 from typing import Annotated
 import openai
@@ -73,15 +72,3 @@ class RAGService:
         query_engine = self.index.as_query_engine()
         response = query_engine.query(query)
         return str(response)
-    
-    @bentoml.api
-    async def encode(
-        self,
-        sentences: t.List[str],
-    ) -> np.ndarray:
-        print("encoding sentences:", len(sentences))
-        # Tokenize sentences
-        sentence_embeddings = await self.embedding_model.encode(sentences)
-        return sentence_embeddings
-    
-
