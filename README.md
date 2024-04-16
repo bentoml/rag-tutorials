@@ -24,6 +24,7 @@ To begin, clone the entire project.
 
 ```bash
 git clone https://github.com/bentoml/rag-tutorials.git
+cd rag-tutorials
 ```
 
 Next, set up the Python environment required for running the tutorials:
