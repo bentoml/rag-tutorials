@@ -10,6 +10,13 @@ LlamaIndex supports any LLM that has OpenAI-compatible APIs via [OpenAILike](htt
 
 First, we need to copy `service.py` from the BentoVLLM example to a new file named `llm.py`. Also, bring over the `bentovllm_openai` directory containing the utility code. This is already done, and you can see the entire code in `llm.py` in this directory.
 
+The LLM used in this tutorial is `meta-llama/Llama-2-7b-chat-hf`, which requires you to require access [on its website](https://llama.meta.com/llama-downloads) and [Hugging Face](https://huggingface.co/meta-llama/Llama-2-7b-chat-hf). After that, log in to Hugging Face:
+
+```bash
+pip install -U huggingface_hub
+huggingface-cli login
+```
+
 Then, update `service.py` to include the new LLM service. The modifications needed for importing and `__init__` method include:
 
 ```diff
