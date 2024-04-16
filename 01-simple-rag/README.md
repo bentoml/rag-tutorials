@@ -1,17 +1,29 @@
-# Simple Rag Web Service
+# Transforming a Local RAG into a BentoML Web Service
 
-In [last section](../00-simple-local-rag/) we made a simple script to generate a documentation index from some text files in a folder. In this section, we want to turn this script into a web service. Now remember that the script in last section has two steps:
+This is the second tutorial of this BentoML RAG example project. In the [last tutorial](../00-simple-local-rag/), we used a simple script to generate a documentation index from text files in a folder. In this tutorial, we will turn this script into a web service.
 
-1. create an index and populate the index with documents
-2. query the index
+The script in the last tutorial includes two steps:
 
-When converting to a web service, a better way is to separate the first step into two different steps so we have:
+1. Create an index and populate the index with documents
+2. Query the index for information.
 
-1. create an index
-2. let users populate the index by uploading files
-3. let users query the index
+When converting it to a web service, one solution is to divide the first step into two separate steps:
 
-To simplify this process, we will use [BentoML](https://github.com/bentoml/BentoML). In BentoML, a Service is a deployable and scalable unit, defined as a Python class with the `@bentoml.service` decorator. It can manage states and their lifecycles. In our service's `__init__` method, we will create the index and setup some global settings and these codes will be executed a
+1. Create an empty index.
+2. Enable users to populate the index by uploading files.
+3. Allow users to query the populated index.
+
+To simplify this process, we will use [BentoML](https://github.com/bentoml/BentoML).
+
+## Define a BentoML Service
+
+A BentoML Service is defined as a deployable and scalable unit through a Python class, annotated with the `@bentoml.service` decorator. This class manages Service states and their lifecycles. By convention, BentoML Services are defined in `service.py`.
+
+The `service.py` file required for this tutorial already exists in the directory. Here is a breakdown of the file.
+
+### Service initialization
+
+In the Service's `__init__` method, we create the index and set up some global settings.
 
 ```python
 @bentoml.service(
@@ -34,7 +46,13 @@ class RAGService:
         ...
 ```
 
-Then we define APIs that let users upload files and populate the index we set up in `__init__`. Each API within the BentoML Service is defined using the `@bentoml.api` decorator and turned into a HTTP endpoint:
+### APIs for document ingestion and querying
+
+Each functionality (uploading text, PDFs, and querying the index) is exposed as an HTTP endpoint using the `@bentoml.api` decorator.
+
+#### Text and PDF ingestion
+
+Users can upload documents either as plain text or PDFs, which are then integrated into the index.
 
 ```python
     ...
@@ -55,12 +73,23 @@ Then we define APIs that let users upload files and populate the index we set up
     @bentoml.api
     def ingest_pdf(self, pdf: Annotated[Path, bentoml.validators.ContentType("application/pdf")]) -> str:
 
-        # we use pypdf to extract text from pdf
+        # Use pypdf to extract text from pdf
         import pypdf
-        ...
+        reader = pypdf.PdfReader(pdf)
+        texts = []
+        for page in reader.pages:
+            text = page.extract_text()
+            texts.append(text)
+        all_text = "".join(texts)
+        doc = Document(text=all_text)
+        self.index.insert(doc)
+        self.index.storage_context.persist(persist_dir=PERSIST_DIR)
+        return f"Successfully Loaded Document"
 ```
 
-Finally, we define the API to let users query the index
+#### Query
+
+The `query` endpoint allows users to perform queries against the populated index.
 
 ```python
     ...
@@ -72,7 +101,10 @@ Finally, we define the API to let users query the index
         return str(response)
 ```
 
-With a proper `bentofile.yaml`, we can start the web service by `bentoml serve .`. You can visit <http://localhost:3000>, scroll down to Service APIs, and click Try it out to try out query api. You can also use curl or any HTTP requests library to interact with the API endpoint.
+## Run the Service
 
+With a `bentofile.yaml` file, you can start the web service by running `bentoml serve .`. Once running, the Service is accessible via http://localhost:3000. You can interact with the API through the Swagger UI or use tools like `curl` to perform requests.
 
-Now we have a web service, but we still rely on OpenAI to do all the work (embedding and question answering). In [next section](../02-custom-embedding/) we will try to replace the embedding function using our own model.
+## Next step
+
+The web service works, but it still relies on OpenAI to implement embeddings and answer questions. In [the next tutorial](../02-custom-embedding/), we'll replace OpenAI's embedding function with a custom model for better control over the retrieval process.
