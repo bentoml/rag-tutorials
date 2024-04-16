@@ -1,11 +1,23 @@
-# Rag Web Service with Custom Embedding Service
+# Integrating a Custom Embedding Service
 
-In [last section](../01-simple-rag/) we made a RAG web service. In this section, we want to use our own model to do text embedding. To make LlamaIndex use a custom embedding model, we need to do two things:
+This is the third tutorial of this BentoML RAG example project.
 
-1. create our own embedding web service.
-2. wrap the embedding service in a class to make LlamaIndex recognize it (reference: <https://docs.llamaindex.ai/en/stable/examples/embeddings/custom_embeddings/>).
+In [the last tutorial](../01-simple-rag/), we built a RAG web service with BentoML. In this tutorial, we will enhance our RAG service by integrating a custom text embedding model, which will replace the default embedding service provided by OpenAI.
 
-BentoML has [an example](https://github.com/bentoml/BentoSentenceTransformers/) showing how to make a text embedding service using [SentenceTransformers](https://sbert.net). Because BentoML's services are composable, we can copy the Python source code as `embedding.py`, add a wrapper class similar to LlamaIndex's [example codes](https://docs.llamaindex.ai/en/stable/examples/embeddings/custom_embeddings/) and import this embedding services directly in our `service.py`. The modifications in `service.py` only need the following lines:
+To incorporate our custom model into LlamaIndex, we need to do the following:
+
+1. Create our own embedding web service.
+2. Ensure LlamaIndex can use this new service by wrapping it in a class as specified in [the LlamaIndex documentation](https://docs.llamaindex.ai/en/stable/examples/embeddings/custom_embeddings/).
+
+## Use SentenceTransformers with BentoML
+
+BentoML provides [an example project](https://github.com/bentoml/BentoSentenceTransformers/) on creating a text embedding service using [SentenceTransformers](https://sbert.net). Since BentoML Services are composable, we will leverage this to integrate directly with our RAG service.
+
+The Service source code of the BentoML embedding example project is already saved in `embedding.py`, with an additional wrapper class similar to LlamaIndex's [example code](https://docs.llamaindex.ai/en/stable/examples/embeddings/custom_embeddings/). 
+
+## Run the updated Service
+
+We need to import our embedding service directly in `service.py`. The modifications in `service.py` only need the following lines:
 
 ```diff
 + # import embedding service and wrapper class in service.py
@@ -28,4 +40,8 @@ BentoML has [an example](https://github.com/bentoml/BentoSentenceTransformers/) 
 
 ```
 
-We still need the OpenAI key because we use ChatGPT for the question-answering part. In [next section](../03-custom-llm/) we will try to replace this part with our own LLM model.
+Then, run with this Service by using `bentoml serve .` and interact with it in the same way as shown in the previous tutorial.
+
+## Next step
+
+Despite integrating our own embedding model, we continue to use OpenAI's service for the question-answering part. In the [next tutorial](../03-custom-llm/), we will replace this component with our own language model.
