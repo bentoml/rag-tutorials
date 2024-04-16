@@ -74,7 +74,7 @@ class RAGService:
             self.index.insert(doc)
 
         self.index.storage_context.persist()
-        return f"Successfully Loaded Document"
+        return "Successfully Loaded Document"
 
     
     @bentoml.api
@@ -92,7 +92,7 @@ class RAGService:
             self.index.insert(doc)
 
         self.index.storage_context.persist()
-        return f"Successfully Loaded Document"
+        return "Successfully Loaded Document"
 
 
     @bentoml.api
