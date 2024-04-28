@@ -7,7 +7,6 @@ from llama_index.core import Document, StorageContext, VectorStoreIndex, load_in
 from llama_index.core.node_parser import SentenceSplitter
 from llama_index.llms.openai_like import OpenAILike
 
-import os
 from pathlib import Path
 from typing import Annotated
 import openai

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 import bentoml
 
 from llama_index.core import Document, StorageContext, VectorStoreIndex, load_index_from_storage
@@ -8,10 +7,8 @@ from llama_index.vector_stores.milvus import MilvusVectorStore
 from llama_index.core.node_parser import SentenceSplitter
 from llama_index.llms.openai_like import OpenAILike
 
-import os
 from pathlib import Path
 from typing import Annotated
-import openai
 
 from embedding import SentenceTransformers, BentoMLEmbeddings
 from llm import VLLM, LLM_MODEL_ID, LLM_MAX_TOKENS
