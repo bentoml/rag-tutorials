@@ -6,7 +6,6 @@ import bentoml
 from llama_index.core import Document, StorageContext, VectorStoreIndex, load_index_from_storage
 from llama_index.core.node_parser import SentenceSplitter
 
-import os
 from pathlib import Path
 from typing import Annotated
 import openai
