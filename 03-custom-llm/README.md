@@ -29,6 +29,7 @@ Then, update `service.py` to include the new LLM service. The modifications need
  class RAGService:
 
      embedding_service = bentoml.depends(SentenceTransformers)
+     # Add a dependency on the LLM service
 +    llm_service = bentoml.depends(VLLM)
 
      def __init__(self):
@@ -37,6 +38,7 @@ Then, update `service.py` to include the new LLM service. The modifications need
          Settings.embed_model = self.embed_model
 
 +        from transformers import AutoTokenizer
+         # Set LlamaIndex prompt helper arguments for the LLM
 +        Settings.num_output = 256
 +        Settings.context_window = LLM_MAX_TOKENS
 +        Settings.tokenizer = AutoTokenizer.from_pretrained(
@@ -48,6 +50,7 @@ Then, update `service.py` to include the new LLM service. The modifications need
          storage_context = StorageContext.from_defaults(persist_dir=PERSIST_DIR)
          self.index = load_index_from_storage(storage_context)
 
+         # Retrieve the URL mapping for the remote language model service
 +        from bentoml._internal.container import BentoMLContainer
 +        self.vllm_url = BentoMLContainer.remote_runner_mapping.get()["VLLM_OpenAI"]
 +

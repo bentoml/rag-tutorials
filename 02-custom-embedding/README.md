@@ -27,20 +27,28 @@ We need to import our embedding service directly in `service.py`. The modificati
 
  class RAGService:
 
+     # Declare a dependency on SentenceTransformers so that it is loaded and you can call its functions
 +    embedding_service = bentoml.depends(SentenceTransformers)
 +
      def __init__(self):
          openai.api_key = os.environ.get("OPENAI_API_KEY")
+         # Initialize the BentoMLEmbeddings class with the embedding service
 +        self.embed_model = BentoMLEmbeddings(self.embedding_service)
 
          from llama_index.core import Settings
          self.text_splitter = SentenceSplitter(chunk_size=1024, chunk_overlap=20)
          Settings.node_parser = self.text_splitter
+         # Assign the embed model
 +        Settings.embed_model = self.embed_model
 
 ```
 
-Then, run with this Service by using `bentoml serve .` and interact with it in the same way as shown in the previous tutorial.
+Note that:
+
+- `SentenceTransformers` is a BentoML Service for generating sentence embeddings. `bentoml.depends` allows us to [pass this Service as an argument](https://docs.bentoml.com/en/latest/guides/distributed-services.html#interservice-communication) and invoke its available methods as if they were local.
+- `BentoMLEmbeddings` is a [custom embedding class defined using LlamaIndex BaseEmbedding](https://docs.llamaindex.ai/en/stable/module_guides/models/embeddings/#custom-embedding-model). You can use it as a wrapper around any BentoML Service that provides embedding functionalities, such as the `SentenceTransformers` Service.
+
+Run with this Service by using `bentoml serve .` and interact with it in the same way as shown in the previous tutorial.
 
 ## Next step
 

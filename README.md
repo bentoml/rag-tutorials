@@ -12,11 +12,11 @@ See [here](https://github.com/bentoml/BentoML?tab=readme-ov-file#%EF%B8%8F-what-
 
 This repository contains a series of five tutorials designed to progressively build a RAG system with custom embedding and language models as well as a vector database.
 
-1. [Building a Simple RAG System using LlamaIndex](00-simple-local-rag/): Set up a basic RAG system that runs locally on your machine using LlamaIndex. This serves as a foundational step, familiarizing you with the basic components of a RAG system.
-2. [Transforming a Local RAG into a BentoML Web Service](01-simple-rag/): Convert the local script into a web service by setting up a basic API service using BentoML.
-3. [Integrating a Custom Embedding Service](02-custom-embedding/): Replace the default OpenAI embedding model used in the RAG system with a custom model.
-4. [Integrating a Custom LLM](03-custom-llm/): Replace the default OpenAI question-answering part in the RAG system with a custom LLM.
-5. [Integrating Milvus Vector Database](04a-vector-store-milvus/): Implement Milvus to manage the documentation index for better scalability and performance.
+0. [Building a Simple RAG System using LlamaIndex](00-simple-local-rag/): Set up a basic RAG system that runs locally on your machine using LlamaIndex. This serves as a foundational step, familiarizing you with the basic components of a RAG system.
+1. [Transforming a Local RAG into a BentoML Web Service](01-simple-rag/): Convert the local script into a web service by setting up a basic API service using BentoML.
+2. [Integrating a Custom Embedding Service](02-custom-embedding/): Replace the default OpenAI embedding model used in the RAG system with a custom model.
+3. [Integrating a Custom LLM](03-custom-llm/): Replace the default OpenAI question-answering part in the RAG system with a custom LLM.
+4. [Integrating Milvus Vector Database](04a-vector-store-milvus/): Implement Milvus to manage the documentation index for better scalability and performance.
 
 ## Set up the environment
 
