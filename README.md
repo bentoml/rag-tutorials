@@ -6,7 +6,7 @@ This is a BentoML example project, containing a series of tutorials where we bui
 
 This project will guide you through setting up a RAG service that uses vector-based search and large language models (LLMs) to answer queries using documents as a knowledge base. Our ultimate goal is to create a system that can scale efficiently and handle complex queries with high performance.
 
-See [here](https://github.com/bentoml/BentoML?tab=readme-ov-file#%EF%B8%8F-what-you-can-build-with-bentoml) for a full list of BentoML example projects.
+See [here](https://github.com/bentoml/BentoML/tree/main/examples) for a full list of BentoML example projects.
 
 ## Project overview
 
