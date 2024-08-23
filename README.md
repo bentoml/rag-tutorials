@@ -30,7 +30,7 @@ cd rag-tutorials
 Next, set up the Python environment required for running the tutorials:
 
 ```bash
-
+# Recommend Python 3.11
 python3 -m venv rag-bentoml && . rag-bentoml/bin/activate && pip install -r requirement.txt
 ```
 
