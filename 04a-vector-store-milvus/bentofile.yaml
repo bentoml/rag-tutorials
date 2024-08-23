@@ -8,4 +8,5 @@ exclude:
 python:
   requirements_txt: "./requirement.txt"
 docker:
-    distro: debian
+  distro: debian
+  python_version: 3.11
