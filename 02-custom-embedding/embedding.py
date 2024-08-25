@@ -45,8 +45,8 @@ class BentoMLEmbeddings(BaseEmbedding):
     _model: bentoml.Service = PrivateAttr()
 
     def __init__(self, embed_model: bentoml.Service, **kwargs) -> None:
-        self._model = embed_model
         super().__init__(**kwargs)
+        self._model = embed_model
         
     def sync_client(self, query: str):
 
