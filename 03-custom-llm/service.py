@@ -14,7 +14,6 @@ import openai
 
 from embedding import SentenceTransformers, BentoMLEmbeddings
 from llm import VLLM, LLM_MODEL_ID, LLM_MAX_TOKENS
-from bentovllm_openai.utils import _make_httpx_client
 
 PERSIST_DIR = "./storage"
 
@@ -28,7 +27,6 @@ class RAGService:
     llm_service = bentoml.depends(VLLM)
 
     def __init__(self):
-        openai.api_key = os.environ.get("OPENAI_API_KEY")
         self.embed_model = BentoMLEmbeddings(self.embedding_service)
 
         from llama_index.core import Settings
@@ -47,9 +45,6 @@ class RAGService:
         index.storage_context.persist(persist_dir=PERSIST_DIR)
         storage_context = StorageContext.from_defaults(persist_dir=PERSIST_DIR)
         self.index = load_index_from_storage(storage_context)
-
-        from bentoml._internal.container import BentoMLContainer
-        self.vllm_url = BentoMLContainer.remote_runner_mapping.get()["VLLM_OpenAI"]
 
 
     @bentoml.api
@@ -84,9 +79,10 @@ class RAGService:
     def query(self, query: str) -> str:
         from llama_index.core import Settings
 
-        httpx_client, base_url = _make_httpx_client(self.vllm_url, VLLM)
+        base_url = self.llm_service.client_url + "/v1"
+        httpx_client = self.llm_service.to_sync.client
         llm = OpenAILike(
-            api_base= base_url + "/v1/",
+            api_base=base_url,
             api_key="no-need",
             is_chat_model=True,
             http_client=httpx_client,

@@ -15,7 +15,6 @@ import openai
 
 from embedding import SentenceTransformers, BentoMLEmbeddings
 from llm import VLLM, LLM_MODEL_ID, LLM_MAX_TOKENS
-from bentovllm_openai.utils import _make_httpx_client
 
 PERSIST_DIR = "./storage"
 
@@ -44,15 +43,14 @@ class RAGService:
         )
 
         # more options at https://milvus.io/docs/integrate_with_llamaindex.md
-        vector_store = MilvusVectorStore(dim=384, overwrite=False)
+        vector_store = MilvusVectorStore(
+            uri="./milvus_demo.db", dim=384, overwrite=False
+        )
         self.storage_context = StorageContext.from_defaults(vector_store=vector_store)
         try:
             self.index = VectorStoreIndex.from_vector_store(vector_store)
         except ValueError:
             self.index = None
-
-        from bentoml._internal.container import BentoMLContainer
-        self.vllm_url = BentoMLContainer.remote_runner_mapping.get()["VLLM_OpenAI"]
 
 
     @bentoml.api
@@ -99,9 +97,10 @@ class RAGService:
     def query(self, query: str) -> str:
         from llama_index.core import Settings
 
-        httpx_client, base_url = _make_httpx_client(self.vllm_url, VLLM)
+        base_url = self.llm_service.client_url + "/v1"
+        httpx_client = self.llm_service.to_sync.client
         llm = OpenAILike(
-            api_base= base_url + "/v1/",
+            api_base=base_url,
             api_key="no-need",
             is_chat_model=True,
             http_client=httpx_client,

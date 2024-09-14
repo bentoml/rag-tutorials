@@ -2,9 +2,9 @@ import bentoml
 from bentovllm_openai.utils import openai_endpoints
 
 LLM_MAX_TOKENS = 4096
-LLM_MODEL_ID = "meta-llama/Llama-2-7b-chat-hf"
+LLM_MODEL_ID = "meta-llama/Meta-Llama-3.1-8b-instruct"
 
-@openai_endpoints(served_model=LLM_MODEL_ID)
+@openai_endpoints(model_id=LLM_MODEL_ID)
 @bentoml.service(
     traffic={
         "timeout": 600,

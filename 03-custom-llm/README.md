@@ -10,7 +10,7 @@ LlamaIndex supports any LLM that has OpenAI-compatible APIs via [OpenAILike](htt
 
 First, we need to copy `service.py` from the BentoVLLM example to a new file named `llm.py`. Also, bring over the `bentovllm_openai` directory containing the utility code. This is already done, and you can see the entire code in `llm.py` in this directory.
 
-The LLM used in this tutorial is `meta-llama/Llama-2-7b-chat-hf`, which requires you to require access [on its website](https://llama.meta.com/llama-downloads) and [Hugging Face](https://huggingface.co/meta-llama/Llama-2-7b-chat-hf). After that, log in to Hugging Face:
+The LLM used in this tutorial is `meta-llama/Meta-Llama-3.1-8b-instruct`, which requires you to require access [on its website](https://llama.meta.com/llama-downloads) and [Hugging Face](https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct). After that, log in to Hugging Face:
 
 ```bash
 pip install -U huggingface_hub
@@ -22,7 +22,6 @@ Then, update `service.py` to include the new LLM service. The modifications need
 ```diff
 +from llama_index.llms.openai_like import OpenAILike
 +from llm import VLLM, LLM_MODEL_ID, LLM_MAX_TOKENS
-+from bentovllm_openai.utils import _make_httpx_client
 
  ...
 
@@ -51,9 +50,6 @@ Then, update `service.py` to include the new LLM service. The modifications need
          self.index = load_index_from_storage(storage_context)
 
          # Retrieve the URL mapping for the remote language model service
-+        from bentoml._internal.container import BentoMLContainer
-+        self.vllm_url = BentoMLContainer.remote_runner_mapping.get()["VLLM_OpenAI"]
-+
 
 ```
 
@@ -63,9 +59,10 @@ Next, switch the LLM configuration in the `query` method to point to our newly i
      def query(self, query: str) -> str:
 +        from llama_index.core import Settings
 +
-+        httpx_client, base_url = _make_httpx_client(self.vllm_url, VLLM)
++        base_url = self.llm_service.client_url + "/v1"
++        httpx_client = self.llm_service.to_sync.client
 +        llm = OpenAILike(
-+            api_base=base_url + "/v1/",
++            api_base=base_url,
 +            api_key="no-need",
 +            is_chat_model=True,
 +            http_client=httpx_client,
@@ -79,7 +76,7 @@ Next, switch the LLM configuration in the `query` method to point to our newly i
          return str(response)
 ```
 
-Note that here we use a utility function `_make_httpx_client` from BentoVLLM example's utility code. The reason is that when we have multiple services in a BentoML service, the service can call each other's API like calling a Python method. But underlying the calling is an HTTP call over either Unix domain socket (when all services are served on a single machine) or TCP (when services are served distributed on different nodes in a network). BentoML has its own [client](https://docs.bentoml.com/en/latest/guides/clients.html) to handle this difference. However, LlamaIndex uses OpenAI's client to call the LLM service, so we need to replace OpenAI's default HTTPX client with our own client.
+Note that here we use a feature `self.llm_service.to_sync.client` to return a customized HTTPX client to be used with `OpenAILike` class. The reason is that when we have multiple services in a BentoML service, the service can call each other's API like calling a Python method. But underlying the calling is an HTTP call over either Unix domain socket (when all services are served on a single machine) or TCP (when services are served distributed on different nodes in a network). BentoML has its own [client](https://docs.bentoml.com/en/latest/guides/clients.html) to handle this difference. However, LlamaIndex uses OpenAI's client to call the LLM service, so we need to replace OpenAI's default HTTPX client with our own client.
 
 With these modifications, the RAG web service now uses completely self-hosted models. You can serve the Service using `bentoml serve .` on a machine with a GPU.
 
