@@ -1,7 +1,9 @@
-bentoml>=1.2.8
-openai
-llama-index
-numpy
-torch==2.1.2
-sentence_transformers
-vllm==0.3.3
+accelerate==0.34.0
+bentoml==1.3.5
+fastapi==0.112.2
+llama-index==0.11.7
+llama-index-llms-openai-like==0.2.0
+openai==1.43.0
+pydantic<2.9
+sentence_transformers==3.0.1
+vllm==0.6.0; sys_platform == "linux"

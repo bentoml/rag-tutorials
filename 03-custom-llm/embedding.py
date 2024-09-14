@@ -5,7 +5,7 @@ import typing as t
 import numpy as np
 import bentoml
 
-from llama_index.core.base.embeddings.base import BaseEmbedding
+from llama_index.core.embeddings import BaseEmbedding
 from llama_index.core.bridge.pydantic import PrivateAttr
 
 MODEL_ID = "sentence-transformers/all-MiniLM-L6-v2"
@@ -48,8 +48,8 @@ class BentoMLEmbeddings(BaseEmbedding):
     _model: bentoml.Service = PrivateAttr()
 
     def __init__(self, embed_model: bentoml.Service, **kwargs) -> None:
-        self._model = embed_model
         super().__init__(**kwargs)
+        self._model = embed_model
         
     def sync_client(self, query: str):
 
